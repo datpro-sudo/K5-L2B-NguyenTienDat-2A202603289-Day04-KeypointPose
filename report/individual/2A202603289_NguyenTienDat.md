@@ -1,20 +1,16 @@
 # Báo cáo cá nhân — NguyenTienDat-2A202603289
 
-Dữ liệu: 12 ảnh người COCO (Lin et al., 2014) và 8 ảnh khuôn mặt cắt từ ảnh COCO, chỉ dùng trong lớp.
-
-> **Ghi chú cho người điền:** các mục đã điền sẵn dựa trên file trong repo (`assignment.json`, hai file zip, `labels_d04_keypoint.json`, kết quả `check_submission.py`). Các chỗ `___` / `...` là phần chỉ bạn biết (giờ giấc, thao tác trên CVAT, quá trình làm). **Mục 3, 4, 7 theo `RULES.md` phải do chính bạn viết dựa trên job thật, nên để trống.** Xóa ghi chú này trước khi nộp.
-
 ## 0. Thông tin học viên
 
 - Họ tên: Nguyễn Tiến Đạt
 - MSSV: 2A202603289
-- Email: ___
-- Link repository: https://github.com/datpro-sudo/K5-L2B-2A202603289-NguyenTienDat-KeypointPose
-- Phiên bản CVAT (Help → About): ___
-- Máy: hệ điều hành ___ · RAM ___ GB · chạy CVAT chế độ đầy đủ / lite
+- Email: nguyentiendat.qc2004@gmail.com
+- Link repository: https://github.com/datpro-sudo/K5-L2B-NguyenTienDat-2A202603289-Day04-KeypointPose
+- Phiên bản CVAT (Help → About): CVAT Community 2.74.1
+- Máy: Windows 11 Pro · Ubuntu WSL2 · RAM 16 GB · CVAT chạy chế độ đầy đủ.
 - Bộ ảnh (`src/exports/assignment.json` do `lab.py setup` tạo): có
-- Giờ bắt đầu: ___
-- Giờ kết thúc: ___
+- Giờ bắt đầu: 16H
+- Giờ kết thúc: 19H30
 
 ## 1. Kiểm tra label (CP0)
 

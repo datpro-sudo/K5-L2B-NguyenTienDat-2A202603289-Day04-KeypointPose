@@ -37,20 +37,21 @@ Số skeleton lấy từ file `NguyenTienDat_persons.zip` / `NguyenTienDat_faces
 
 | Nhóm ảnh | Số ảnh | Số skeleton đã gán | Số người dưới 60 px (không gán) | Số poster / gương / màn hình bỏ qua | Thời gian (phút) |
 |---|---:|---:|---:|---:|---:|
-| `easy` | 5 | 5 | ___ | ___ | ___ |
-| `occluded` | 3 | 6 | ___ | ___ | ___ |
-| `back` | 2 | 2 | ___ | ___ | ___ |
-| `small` | 1 | 2 | ___ | ___ | ___ |
-| `crowd` | 1 | 3 | ___ | ___ | ___ |
-| `faces` | 8 | 8 | — | ___ | ___ |
+| `easy` | 5 | 5 | 0 | 0 | 10 |
+| `occluded` | 3 | 6 | 3 | 4 | 20 |
+| `back` | 2 | 2 | 0 | 0 | 10 |
+| `small` | 1 | 2 | 0 | 0 | 10 |
+| `crowd` | 1 | 3 | 0 | 0 | 10 |
+| `faces` | 8 | 8 | 0 | 0 | 10 |
 
 Tổng: 12 ảnh người có 18 skeleton `person`; 8 ảnh mặt có 8 skeleton `face`.
 
-- Số ảnh người đã xong ở mốc phút 105: ___ / 10
-- Thời gian thực tế (phút): CP1 ___ · CP2 ___ · CP3 ___
+- Số ảnh người đã xong ở mốc phút 105: 10 / 10
+- Thời gian thực tế (phút): CP1 40· CP2 50 · CP3 50
 - Ảnh tốn thời gian nhất là ảnh nào, vì sao?
+Ảnh tốn thời gian nhất và lý do:
 
-...
+Ảnh 000000542160 là một trong những ảnh khó nhất vì có nhiều người xuất hiện trong cùng một khung hình, đặc biệt là người quay lưng. Việc xác định bên trái/phải của cơ thể và ước lượng vị trí các keypoint vùng mặt khi khuôn mặt không nhìn thấy trực tiếp tương đối khó khăn. Ngoài ra, ảnh 000000311497 cũng mất nhiều thời gian do tư thế vận động viên tennis đang di chuyển và hai chân bị vắt chéo, khiến việc xác định chính xác đầu gối và cổ chân trái/phải trở nên khó khăn.
 
 ## 3. Bảng ca khó (CP1, CP2)
 
@@ -89,7 +90,15 @@ Tổng hợp số lỗi theo mã (8 dòng):
 
 Điểm còn phân vân giữa `v = 1` và `v = 0` (ghi cả hai lựa chọn và lý do chọn):
 
-...
+Điểm còn phân vân giữa v=1 và v=0:
+
+Trường hợp điển hình là ba điểm nose, left_eye và right_eye của người quay lưng trong ảnh 000000542160.
+
+Nếu chọn v=0, có nghĩa là điểm không được xác định hoặc không có đủ căn cứ để sử dụng tọa độ.
+
+Nếu chọn v=1, có nghĩa là điểm không nhìn thấy trực tiếp nhưng vị trí vẫn có thể được ước lượng.
+
+Trong trường hợp này, mình chọn v=1 vì hướng quay của đầu và hướng đối diện với cầu thủ số 2 cung cấp căn cứ để ước lượng vị trí các điểm mặt. Tuy nhiên, cần tránh suy luận quá mức khi không có đủ thông tin trực quan.
 
 ## 5. Kiểm file xuất và kết quả tự kiểm (CP4)
 
@@ -105,7 +114,7 @@ Trên toàn bộ file: `num_keypoints` khớp số điểm `v > 0` ở cả 18 s
 
 Sau khi xuất, CVAT ghi `outside` thành `v = 0` (25 điểm). Với `occluded`: sau khi sửa và xuất lại, file có 20 điểm `v = 1` ở task người và 12 điểm `v = 1` ở task mặt, nên CVAT ghi `occluded` thành `v = 1`. Tọa độ của điểm `outside` trong file là **tọa độ cũ** (13 skeleton có điểm `v = 0` vẫn mang tọa độ khác 0, đúng như ghi chú của script).
 
-Hai job đã chuyển sang completed trên CVAT? ___
+Hai job đã chuyển sang completed trên CVAT? Đã chuyển sang completed trên CVAT
 
 Phần **TÓM TẮT** in ra từ `src/check_submission.py`:
 
@@ -158,23 +167,59 @@ Nguồn ảnh: COCO 2017.
 
 ## 7. Tự đánh giá
 
-*(Tự viết.)*
-
 1. Lỗi bạn mắc nhiều nhất hôm nay, và cách bạn sẽ tránh ở dự án thật:
 
-   ...
+Lỗi mình gặp nhiều nhất là xác định nhầm bên trái và bên phải của cơ thể, đặc biệt ở những người quay lưng, người có tư thế di chuyển hoặc hai chân vắt chéo. Ngoài ra, mình cũng có lúc đặt trạng thái visibility chưa chính xác, chẳng hạn một số điểm bị che khuất nhưng ban đầu vẫn để v=2.
+
+Qua quá trình review, mình nhận thấy không thể chỉ dựa vào vị trí của điểm trên ảnh để xác định trái/phải mà phải quan sát hướng cơ thể, vai, hông và các khớp liên quan.
+
+Trong dự án thực tế, mình sẽ kiểm tra hướng cơ thể trước khi gán nhãn, thực hiện theo thứ tự từ đầu xuống chân và review lại những trường hợp có tư thế phức tạp. Đồng thời, mình sẽ phân biệt rõ ba trạng thái v=2, v=1 và v=0 để tránh tạo dữ liệu sai cho mô hình.
 
 2. Một quy tắc bạn đề xuất thêm vào guideline (kèm ảnh ví dụ nếu có):
 
-   ...
+Mình đề xuất bổ sung quy tắc kiểm tra trái/phải đối với người quay lưng và người có tư thế chân bắt chéo.
 
-3. Nhãn của bạn đi vào model ở đâu? Chọn một lỗi bạn đã sửa và nói nó sẽ làm model học sai thế nào (heatmap, trọng số trong loss, hay bước lật ảnh):
+Cụ thể, khi gán keypoint, cần xác định trái/phải theo cơ thể của chính đối tượng, không theo vị trí trái/phải của người quan sát. Với các trường hợp hai chân bắt chéo, không được tự động kết luận nhãn bị đảo chỉ vì cổ chân hoặc đầu gối nằm ở vị trí ngược so với những người có tư thế đứng bình thường.
 
-   ...
+Ngoài ra, nên bổ sung ví dụ riêng cho ba trường hợp: người quay mặt về camera, người quay lưng và người có chân bắt chéo. Điều này giúp người gán nhãn hiểu rõ cách xác định keypoint trong những tư thế khác nhau.
+
+3. Nhãn của bạn đi vào model ở đâu? Chọn một lỗi bạn đã sửa và nói nó sẽ làm model học sai thế nào:
+
+Các keypoint sau khi gán nhãn được chuyển thành tọa độ và trạng thái visibility trong dữ liệu huấn luyện. Đối với các mô hình pose estimation, những tọa độ này có thể được sử dụng để tạo heatmap mục tiêu, sau đó so sánh với heatmap dự đoán của mô hình thông qua hàm loss.
+
+Một lỗi mình từng gặp là đảo vị trí left và right ở người trong ảnh 000000521817. Nếu không sửa, mô hình có thể học rằng một khớp bên trái cơ thể lại nằm ở vị trí của khớp bên phải. Điều này làm cho heatmap mục tiêu bị sai vị trí và tạo ra tín hiệu loss không chính xác trong quá trình huấn luyện.
+
+Nếu dữ liệu có nhiều lỗi tương tự, mô hình sẽ khó học được cấu trúc cơ thể và khả năng dự đoán keypoint trái/phải có thể giảm. Vì vậy, kiểm tra chất lượng annotation trước khi đưa vào training là một bước rất quan trọng.
 
 ## 8. Khó khăn và lỗi kỹ thuật
 
-...
+Trong quá trình thực hiện bài lab, mình gặp một số khó khăn liên quan đến môi trường chạy CVAT và quá trình gán nhãn keypoint.
+
+1. Khó khăn khi thiết lập môi trường CVAT
+
+Mình sử dụng CVAT Community 2.74.1 chạy local trên Ubuntu WSL2. Trong quá trình thiết lập Docker, ban đầu Ubuntu chưa kết nối được với Docker daemon do chưa bật tích hợp WSL trong Docker Desktop. Điều này khiến các lệnh Docker không thể hoạt động bình thường. Sau khi bật WSL Integration và kiểm tra lại bằng docker run hello-world, môi trường đã hoạt động.
+
+2. Khó khăn khi kiểm tra trạng thái CVAT
+
+Trong quá trình khởi động CVAT, mình gặp lỗi liên quan đến OPA health check và bundle. Việc kiểm tra log container giúp xác định thành phần gặp vấn đề. Sau đó, mình chạy health check trực tiếp trong container cvat_server để kiểm tra lại trạng thái các thành phần và xác nhận hệ thống hoạt động.
+
+3. Khó khăn khi gán skeleton
+
+Một số ảnh có người quay lưng, bị che khuất hoặc có tư thế chuyển động phức tạp. Những trường hợp này khiến việc xác định đúng vị trí keypoint và phân biệt trái/phải khó hơn so với ảnh bình thường.
+
+Đặc biệt, khi hai chân bắt chéo, nếu chỉ dựa vào vị trí trên ảnh thì dễ gán nhầm left_knee, right_knee, left_ankle và right_ankle.
+
+4. Khó khăn khi xử lý visibility
+
+Mình cần phân biệt giữa điểm nhìn thấy trực tiếp, điểm bị che khuất nhưng có thể ước lượng và điểm không đủ căn cứ xác định. Ban đầu có một số điểm bị che khuất nhưng được đặt v=2. Sau khi review, mình điều chỉnh lại trạng thái để phù hợp hơn với guideline.
+
+5. Kiểm tra dữ liệu sau khi export
+
+Sau khi xuất hai file ZIP, mình sử dụng src/check_submission.py để kiểm tra số lượng skeleton, cấu trúc keypoint, num_keypoints và các cảnh báo trái/phải.
+
+Kết quả cuối cùng có 0 lỗi và 4 cảnh báo. Những cảnh báo này được xem xét theo từng ảnh vì một số tư thế bắt chéo chân là hợp lý về mặt hình học, không phải lúc nào cũng là lỗi gán nhãn.
+
+Qua bài lab, mình hiểu rằng việc gán nhãn không chỉ là đặt các điểm lên ảnh mà còn phải đảm bảo tính nhất quán của cấu trúc dữ liệu, visibility và thứ tự keypoint trước khi đưa vào mô hình AI.
 
 ## 9. Tài liệu tham khảo và công cụ AI đã dùng
 

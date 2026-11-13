@@ -21,11 +21,9 @@
 | `person` | Skeleton | 17 | Có | Có | 19 |
 | `face` | Skeleton | 13 | Có | Có | 13 |
 
-Mẫu `person` dựng theo người quay mặt về camera (các điểm `left_*` nằm bên phải khung mẫu)? ___ (kiểm trên CVAT, Projects → d04-keypoint → Labels)
+Mẫu person dựng theo người quay mặt về camera: Có. Các điểm left_* và right_* được xác định theo cơ thể của đối tượng, không xác định theo bên trái/phải của người quan sát.
 
-Cách đổi cờ `occluded` / `outside` cho **một điểm** trên phiên bản CVAT này (một câu):
-
-...
+Cách đổi cờ occluded / outside cho một điểm: Chọn đúng keypoint cần chỉnh trên skeleton, sau đó sử dụng chức năng thay đổi trạng thái hiển thị của điểm tương ứng trên giao diện CVAT, không thay đổi trạng thái của toàn bộ skeleton.
 
 ## 2. Số lượng đã gán và thời gian (CP1, CP2)
 
